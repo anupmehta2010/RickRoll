@@ -58,11 +58,6 @@ function playVoiceover(soundFile, text) {
     }, 5000);
 }
 
-// Device detection function
-function isAndroid() {
-    return /Android/i.test(navigator.userAgent);
-}
-
 // Helper function to get random item from array
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
@@ -71,38 +66,34 @@ function getRandomItem(array) {
 // Initialize the prank when document is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Document loaded, initializing prank...");
-    
-    // Check if device is Android (for production)
-    // For development, we'll comment this out
-    /*
-    if (!isAndroid()) {
-        document.body.innerHTML = '<div class="error-message">This experience is designed for Android devices only.</div>';
-        return;
+
+    // Helper to safely add event listeners
+    function safeAddListener(id, event, handler) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(event, handler);
     }
-    */
-    
+
     // Set up the "Do Not Click" button
-    const doNotClickBtn = document.getElementById('do-not-click');
-    doNotClickBtn.addEventListener('click', function() {
+    safeAddListener('do-not-click', 'click', function() {
         prankState.skipPrank = true;
         skipToSpotify();
     });
-    
+
     // Set up interactive buttons
-    document.getElementById('stabilize-btn').addEventListener('click', function() {
+    safeAddListener('stabilize-btn', 'click', function() {
         triggerMoreGlitches();
         playAudio('audio/nice-try.mp3', 'Nice try! You just made it worse!');
     });
-    
-    document.getElementById('escape-btn').addEventListener('click', function() {
+
+    safeAddListener('escape-btn', 'click', function() {
         triggerMoreGlitches();
         playAudio('audio/no-escape.mp3', 'There is no escape from the fun!');
     });
-    
-    document.getElementById('fake-skip').addEventListener('click', function() {
+
+    safeAddListener('fake-skip', 'click', function() {
         playAudio('audio/no-skipping.mp3', 'No skipping allowed! Face your fears... and your laughs!');
     });
-    
+
     // Start the intro sequence
     startIntroSequence();
 });
