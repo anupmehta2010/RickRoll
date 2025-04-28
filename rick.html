@@ -3,149 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horror Experience</title>
+    <title>Futane</title>
     <link rel="stylesheet" href="roll.css">
+    
 </head>
 <body>
     <!-- Main container for all prank content -->
-    <div id="prank-container">
-        <!-- Step 1: Intro Sequence - Cinematic horror-comic intro -->
-        <div id="intro-sequence" class="prank-step active">
+    <main id="Fa-ke-Virus-Troll" role="main" aria-label="Futane Experience">
+        <!-- Step 1: Intro Sequence -->
+        <section id="intro-sequence" class="prank-step active" aria-labelledby="logo-container">
             <div class="dark-screen fullscreen">
-                <!-- Logo container with glitchy text -->
-                <div id="logo-container" class="hidden">
-                    <h1 class="glitch-text">HORROR LABS</h1>
+                <div id="logo-container" class="hidden" aria-live="polite">
+                    <h1 class="glitch-text" tabindex="0">Aww Hell Nah Niga!</h1>
+                    <h2 class="glitch-text" tabindex="0">Futane</h2>
+                    <video 
+                    src="video/niga-niga-niga.mp4" 
+                    class="fullscreen video-style" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline 
+                    aria-label="Intro video">
+                    Sorry, your browser has skill issue thus it does not support embedded videos.
+                    </video>
                 </div>
-                
-                <!-- Narrative text with cinematic voiceover -->
                 <div id="narrative-text" class="hidden">
                     <p class="cinematic-text">In a world where phones have minds of their own...</p>
                     <p class="cinematic-text">one device is about to face its worst nightmare...</p>
-                    <p class="cinematic-text">and its funniest!</p>
+                    <p class="cinematic-text">and its the funniest!</p>
                 </div>
-                
-                <!-- System diagnostics with glitchy text -->
-                <div id="system-diagnostics" class="hidden">
-                    <!-- Glitchy text will be inserted here via JS -->
-                </div>
-                
-                <!-- AR-style overlay with fake camera access -->
-                <div id="ar-overlay" class="hidden">
+                <div id="system-diagnostics" class="hidden" aria-live="polite"></div>
+                <div id="ar-overlay" class="hidden" aria-hidden="true">
                     <div class="camera-accessed-warning">CAMERA ACCESSED</div>
                     <div class="face-scan-overlay"></div>
                     <div class="scan-result glitch-text">Subject: Too Beautiful for This Device!</div>
                 </div>
-                
-                <!-- Device info display -->
-                <div id="device-info" class="hidden">
-                    <!-- Device info will be inserted here via JS -->
-                </div>
-                
-                <!-- Interactive prompts that trigger more glitches -->
+                <div id="device-info" class="hidden"></div>
                 <div id="interactive-prompts" class="hidden">
-                    <button id="stabilize-btn" class="prank-button">Tap to Stabilize!</button>
-                    <button id="escape-btn" class="prank-button">Swipe to Escape!</button>
-                    <button id="fake-skip" class="prank-button">Skip Intro</button>
+                    <button id="stabilize-btn" class="prank-button" aria-label="Stabilize the device">Tap to Stabilize!</button>
+                    <button id="escape-btn" class="prank-button" aria-label="Escape the prank">Swipe to Escape!</button>
+                    <button id="fake-skip" class="prank-button" aria-label="Skip the intro">Skip Intro</button>
                 </div>
-                
-                <!-- Hidden "Do Not Click" button that skips the prank -->
                 <div id="do-not-click-container" class="hidden">
-                    <button id="do-not-click" class="prank-button">DO NOT CLICK</button>
+                    <button id="do-not-click" class="prank-button" aria-label="Do not click this button">DO NOT CLICK</button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Step 2: Glitch Simulation - Animated glitches and video clips -->
-        <div id="glitch-simulation" class="prank-step">
+        </section>
+        <!-- Step 2: Glitch Simulation -->
+        <section id="glitch-simulation" class="prank-step" aria-label="Glitch Simulation">
             <div class="glitch-container fullscreen">
-                <!-- Video container for custom clips -->
-                <div id="video-container" class="fullscreen">
-                    <!-- Videos will be inserted here via JS -->
-                </div>
-                
-                <!-- Overlay effects for glitches -->
-                <div id="glitch-overlays" class="fullscreen">
+                <div id="video-container" class="fullscreen" aria-live="polite"></div>
+                <div id="glitch-overlays" class="fullscreen" aria-hidden="true">
                     <div class="glitch-overlay" id="pixelation-overlay"></div>
                     <div class="glitch-overlay" id="screen-tear-overlay"></div>
                     <div class="glitch-overlay" id="color-inversion-overlay"></div>
                     <div class="glitch-overlay" id="error-message-overlay"></div>
                 </div>
-                
-                <!-- Text messages and taunts -->
-                <div id="text-messages" class="fullscreen">
-                    <!-- Text messages will be inserted here via JS -->
-                </div>
+                <div id="text-messages" class="fullscreen" aria-live="polite"></div>
             </div>
-        </div>
-        
-        <!-- Step 3: Troll Phase - Interactive elements and rickroll finale -->
-        <div id="troll-phase" class="prank-step">
+        </section>
+        <!-- Step 3: Troll Phase -->
+        <section id="troll-phase" class="prank-step" aria-label="Troll Phase">
             <div class="troll-container fullscreen">
-                <!-- Fake data leak animation -->
-                <div id="fake-data-leak" class="fullscreen">
-                    <!-- Data leak animation will be added via JS -->
-                </div>
-                
-                <!-- Hacker chat simulation -->
-                <div id="hacker-chat" class="chat-window hidden">
-                    <!-- Chat messages will be added via JS -->
-                </div>
-                
-                <!-- Panic button that triggers more pranks -->
+                <div id="fake-data-leak" class="fullscreen"></div>
+                <div id="hacker-chat" class="chat-window hidden" aria-live="polite"></div>
                 <div id="panic-button-container" class="hidden">
-                    <button id="panic-button" class="prank-button">PANIC BUTTON</button>
+                    <button id="panic-button" class="prank-button" aria-label="Panic button">PANIC BUTTON</button>
                 </div>
-                
-                <!-- Button game with no correct answers -->
                 <div id="button-game-container" class="hidden">
-                    <div class="button-game-text">Choose the right button!</div>
+                    <div class="button-game-text">Choose the right butt-on!</div>
                     <div class="button-game-buttons">
-                        <button class="game-button prank-button">Button 1</button>
-                        <button class="game-button prank-button">Button 2</button>
-                        <button class="game-button prank-button">Button 3</button>
+                        <button class="game-button prank-button" aria-label="Button 1">Butt</button>
+                        <button class="game-button prank-button" aria-label="Button 2">Button</button>
+                        <button class="game-button prank-button" aria-label="Button 3">Butt</button>
                     </div>
                 </div>
-                
-                <!-- Fake loading bar -->
                 <div id="loading-bar-container" class="hidden">
                     <div class="loading-text">Uploading your data...</div>
                     <div class="loading-bar-outer">
-                        <div class="loading-bar-inner"></div>
+                        <div class="loading-bar-inner" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Loading progress"></div>
                     </div>
                 </div>
-                
-                <!-- Voice challenge prompt -->
                 <div id="voice-challenge" class="hidden">
-                    <div class="voice-prompt">Say "Save my phone!" to stop the hack!</div>
-                    <div class="voice-indicator">🎤</div>
+                    <div class="voice-prompt">Say "Nigga-Money" to stop the hack!</div>
+                    <div class="voice-indicator" aria-label="Microphone">🎤</div>
                 </div>
-                
-                <!-- Virus mascots container -->
-                <div id="virus-mascots" class="hidden">
-                    <!-- Virus mascots will be added via JS -->
-                </div>
-                
-                <!-- Countdown to rickroll -->
+                <div id="virus-mascots" class="hidden"></div>
                 <div id="countdown-container" class="hidden">
                     <div class="countdown-text">System meltdown in:</div>
-                    <div id="countdown-number">10</div>
+                    <div id="countdown-number" aria-live="assertive">10</div>
                 </div>
-                
-                <!-- Rickroll finale container -->
-                <div id="rickroll-container" class="hidden">
-                    <!-- Rickroll content will be added via JS -->
-                </div>
+                <div id="rickroll-container" class="hidden"></div>
             </div>
+        </section>
+    </main>
+    <!-- Preloader
+    <div id="preloader" class="fullscreen" aria-label="Loading">
+        <div class="loader-text">Loading Horror Experience...</div>
+        <div class="loader-bar-outer">
+            <div class="loader-bar-inner"></div>
         </div>
-    </div>
-
-    <!-- Audio container for sound effects -->
-    <div id="audio-container"></div>
-
+        <div class="loader-percentage">0%</div>
+    </div> -->
+    <!-- Audio container -->
+    <div id="audio-container" aria-hidden="true"></div>
     <!-- Scripts -->
-    <script src="intro.js"></script>
-    <script src="glitch.js"></script>
-    <script src="troll.js"></script>
-    <script src="trick.js"></script>
+<script src="trick.js" defer></script>
+<script src="intro.js" defer></script>
+<script src="glitch.js" defer></script>
+<script src="troll.js" defer></script>
 </body>
 </html>

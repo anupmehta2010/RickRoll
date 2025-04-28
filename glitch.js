@@ -1,21 +1,56 @@
 // glitch.js - Handles the glitch simulation phase
+// This file contains the logic for the glitch simulation phase of the prank
+// including video playback, sound effects, and visual glitches.
+
+
+// const prankState = {
+//     introCompleted: false,
+//     glitchSimulationCompleted: false,
+//     skipPrank: false,
+//     glitchInterval: null,
+//     glitchIntervals: []
+// };
+
+
+// Function to get a random item from an array
+function getRandomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+// Function to play audio with optional text-to-speech
+// function playAudio(audioSrc, speechText) {
+//     const audio = new Audio(audioSrc);
+//     audio.play().catch(e => console.log('Audio playback error:', e));
+    
+//     // If speech text is provided and speech synthesis is available
+//     if (speechText && window.speechSynthesis) {
+//         const speech = new SpeechSynthesisUtterance(speechText);
+//         window.speechSynthesis.speak(speech);
+//     }
+// }
 
 // Video clips for the glitch simulation
 const videoClips = [
-    'video/glitch1.mp4',
-    'video/horror1.mp4',
-    'video/comic1.mp4',
+    'video/glitch-laxman1.mp4',
+    'video/horror-comic.mp4',
+    'video/idgaf.mp4',
+    'video/time-limit.mp4',
+    'video/meme-construct.mp4',
+    'video/maire.mp4',
+    'video/glitch.mp4',
     'video/glitch2.mp4',
-    'video/horror2.mp4',
-    'video/comic2.mp4'
+    'video/aeee.mp4',
+    'video/unbox.mp4',
+    'video/aee-macarena.mp4',
+    'video/shut-up.mp4'
 ];
 
 // Error messages for overlays
 const errorMessages = [
-    "System compromised... by a dancing skeleton!",
+    "System compromised... by Shit!",
     "Your secrets are now... in the cloud. Literally.",
     "Spooky error: Too much awesomeness detected.",
-    "WARNING: Ghost detected in your browser.",
+    "WARNING: Your coolness detected.",
     "ERROR 666: Demon found in your cookies.",
     "ALERT: Your phone is possessed... by cuteness!",
     "CRITICAL: Meme overload imminent.",
@@ -38,16 +73,21 @@ const taunts = [
 const glitchSounds = [
     'audio/static.mp3',
     'audio/glitch-beep.mp3',
+    'audio/glitch-brokenradio.mp3',
     'audio/digital-error.mp3',
     'audio/comic-boing.mp3',
-    'audio/spooky-whisper.mp3',
+    'audio/spooky-sound.mp3',
+    'audio/falling-sound.mp3',
     'audio/evil-laugh.mp3',
-    'audio/silly-giggle.mp3'
+    'audio/silly-giggle.mp3',
+    'audio/john-cena.mp3',
+    'audio/aaaaahhhh.mp3',
+
 ];
 
 // Function to transition to glitch simulation
 function transitionToGlitchSimulation() {
-    console.log("Transitioning to glitch simulation...");
+    console.log("Transitioning into glitch simulation...");
     
     // Hide intro sequence
     document.getElementById('intro-sequence').classList.remove('active');
@@ -73,7 +113,7 @@ function startGlitchSimulation() {
     const video = document.createElement('video');
     video.className = 'fullscreen';
     video.autoplay = true;
-    video.muted = true;
+    video.muted = true; 
     video.loop = true;
     videoContainer.appendChild(video);
     
@@ -158,7 +198,7 @@ function startGlitchSimulation() {
     // Store intervals for cleanup
     prankState.glitchIntervals = [videoInterval, overlayInterval, messageInterval];
     
-    // End glitch simulation after about 60 seconds
+    // End glitch simulation after about 90 seconds
     setTimeout(() => {
         // Clear intervals
         clearInterval(videoInterval);
@@ -170,5 +210,5 @@ function startGlitchSimulation() {
         if (!prankState.skipPrank) {
             transitionToTrollPhase();
         }
-    }, 60000);
+    }, 90000);
 }

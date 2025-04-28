@@ -2,23 +2,23 @@
 
 // Random text generator for glitches
 const glitchTexts = [
-    "Detected: Ghost in the Machine. Also, a pizza crumb.",
+    "Detected your big Forehead.",
     "WARNING: System compromised by dancing skeletons",
-    "ERROR 404: Sanity not found",
+    "ERROR 404: Error itself not found!",
     "ALERT: Too much awesomeness detected",
     "SCANNING: Found 42 embarrassing selfies",
-    "VIRUS DETECTED: It's doing the macarena",
+    "VIRUS DETECTED: Everybody was Kung Fu Fighting! Huu!! Haa!!",
     "SYSTEM FAILURE: Brain.exe has stopped working",
     "HACKED: Your secrets are now in the cloud. Literally.",
     "CAUTION: Phone may explode with confetti"
 ];
 
 // Array of common names for random whispers
-const commonNames = ['Alex', 'Sam', 'Jamie', 'Taylor', 'Jordan', 'Casey', 'Riley', 'Morgan', 'Avery', 'Quinn'];
+const commonNames = ['Laxmi', 'Laxman', 'Lacmi', 'Laxman-Rekha'];
 
 // Function to generate fake device info
 function generateFakeDeviceInfo() {
-    const models = ['Galaxy S21', 'Pixel 6', 'OnePlus 9', 'Xiaomi Mi 11', 'Realme GT'];
+    const models = ['Samsung A35'];
     const model = getRandomItem(models);
     
     // Get current date and time
@@ -29,25 +29,25 @@ function generateFakeDeviceInfo() {
     // Return HTML for device info display
     return `
         <div class="device-info-container">
-            <p>MODEL: ${model} ULTRA PRO MAX</p>
+            <p>MODEL: ${model} Laxman-Rekha-4HeadMax</p>
             <p>IMEI: ${Math.floor(Math.random() * 1000000000000000)}</p>
             <p>DATE: ${dateStr}</p>
             <p>TIME: ${timeStr}</p>
             <p>BATTERY: CRITICALLY LOW (JUST KIDDING)</p>
-            <p>STATUS: COMPROMISED</p>
+            <p>STATUS: COMPROMISED </p>
         </div>
     `;
 }
 
 // Function to start the intro sequence
 function startIntroSequence() {
-    console.log("Starting intro sequence...");
+    console.log("Downloading Data...");
     
     const introSequence = document.getElementById('intro-sequence');
     const darkScreen = introSequence.querySelector('.dark-screen');
     
     // Play ambient sound
-    playAudio('audio/ambient-intro.mp3');
+    playAudio('audio/intro-sound.mp3');
     
     // Sequence timeline with setTimeout for each step
     setTimeout(() => {
@@ -61,7 +61,7 @@ function startIntroSequence() {
         // Show narrative text
         const narrativeText = document.getElementById('narrative-text');
         narrativeText.classList.remove('hidden');
-        playVoiceover('audio/intro-voiceover.mp3', "In a world where phones have minds of their own... one device is about to face its worst nightmare... and its funniest!");
+        playVoiceover("audio/intro-voiceover.mp3", "In a world where phones have minds of their own... one device is about to face its worst nightmare... and its funniest!");
     }, 4000);
     
     setTimeout(() => {
@@ -163,14 +163,14 @@ function startVisualGlitches(element) {
 
 // Function to trigger more intense glitches
 function triggerMoreGlitches() {
-    const container = document.getElementById('prank-container');
+    const container = document.getElementById('Fa-ke-Virus-Troll');
     
     // More intense glitch effects
     container.style.animation = 'shake 0.5s';
     container.style.filter = 'hue-rotate(180deg) contrast(200%)';
     
     // Play glitch sound
-    playAudio('audio/glitch-intense.mp3');
+    playAudio('audio/glitch-brokenradio.mp3');
     
     // Reset after a moment
     setTimeout(() => {

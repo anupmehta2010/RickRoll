@@ -37,7 +37,7 @@ function startTrollPhase() {
             document.getElementById('button-game-container').classList.remove('hidden');
             
             // Play sound
-            playAudio('audio/panic-button.mp3', 'Too late! You pressed the big red button!');
+            playAudio('audio/too-late.mp3', 'Too late! You pressed the big red button!');
             
             // Add event listeners to game buttons
             const gameButtons = document.querySelectorAll('.game-button');
@@ -56,10 +56,10 @@ function startTrollPhase() {
         });
     }, 6000);
     
-    // After about 15 seconds, start countdown regardless of user interaction
+    // After about 10 seconds, start countdown regardless of user interaction
     setTimeout(() => {
         startCountdown();
-    }, 15000);
+    }, 10000);
 }
 
 // Function to create fake data leak animation
@@ -85,12 +85,10 @@ function startFakeDataLeak() {
             // Random content (file name or icon)
             const fileTypes = ['jpg', 'png', 'mp4', 'pdf', 'doc'];
             const fileNames = [
-                'embarrassing_selfie',
-                'secret_meme',
-                'party_photo',
-                'funny_cat',
-                'vacation_pic',
-                'screenshot'
+                'images/1math.jpg',
+                'images/2khauf.jpg',
+                'images/3not-again.jpg',
+                'images/4kya-ree.jpg'
             ];
             
             const randomFileName = `${getRandomItem(fileNames)}.${getRandomItem(fileTypes)}`;
@@ -173,7 +171,7 @@ function startHackerChat() {
                 hackerChat.scrollTop = hackerChat.scrollHeight;
                 
                 // Play typing sound
-                playAudio('audio/typing.mp3');
+                playAudio('audio/typing-sound.mp3');
             }, 1500);
         }, index * 3000);
     });
@@ -195,9 +193,9 @@ function showLoadingBar() {
         
         // Update text
         if (progress === 50) {
-            loadingText.textContent = 'Almost done stealing your data...';
+            loadingText.textContent = 'Almost done stealing your Massive phone\'s data...';
         } else if (progress === 90) {
-            loadingText.textContent = 'Finalizing hack...';
+            loadingText.textContent = 'Finalizing data steal by the genetics of a Bihari ...';
         }
         
         // When complete, glitch and reset
@@ -231,7 +229,7 @@ function setupVoiceChallenge() {
     // Simulate listening
     setTimeout(() => {
         // Play listening sound
-        playAudio('audio/listening.mp3');
+        playAudio('audio/listening-sound.mp3');
         
         // After a moment, respond regardless of input
         setTimeout(() => {
@@ -242,7 +240,7 @@ function setupVoiceChallenge() {
             showVirusMascots();
             
             // Play response
-            playAudio('audio/voice-fail.mp3', 'Sorry, voice recognition failed... or did it?');
+            playAudio('audio/voice-challenge.mp3', 'Sorry, voice recognition failed... or did it?');
         }, 3000);
     }, 1000);
 }
@@ -315,7 +313,7 @@ function startCountdown() {
         countdownNumber.textContent = count;
         
         // Play beep sound
-        playAudio('audio/countdown-beep.mp3');
+        playAudio('audio/countdown-beepsound.mp3');
         
         // When countdown reaches 0, show rickroll
         if (count <= 0) {
@@ -358,7 +356,7 @@ function showRickroll() {
         rickrollContainer.appendChild(gotchaText);
         
         // Play sound
-        playAudio('audio/gotcha.mp3');
+        playAudio('audio/falling-sound.mp3');
         
         // After a moment, show greeting
         setTimeout(() => {
@@ -381,7 +379,7 @@ function showRickroll() {
             rickrollContainer.appendChild(greetingText);
             
             // Play festive sound
-            playAudio('audio/festive.mp3');
+            playAudio('audio/victory.mp3');
             
             // After a moment, show Spotify text
             setTimeout(() => {
@@ -393,7 +391,7 @@ function showRickroll() {
                 // Redirect to Spotify after a delay
                 setTimeout(() => {
                     // In reality, replace with your Spotify playlist URL
-                    window.location.href = 'https://open.spotify.com/playlist/yourid';
+                    window.location.href = 'https://open.spotify.com/playlist/37i9dQZF1EJsW2JIt2vVd7?si=57fd43c76bdd4f54';
                 }, 3000);
             }, 2000);
         }, 2000);
@@ -428,6 +426,6 @@ function skipToSpotify() {
     // Redirect after a delay
     setTimeout(() => {
         // In reality, replace with your Spotify playlist URL
-        window.location.href = 'https://open.spotify.com/playlist/yourid';
+        window.location.href = 'https://open.spotify.com/playlist/37i9dQZF1EJsW2JIt2vVd7?si=57fd43c76bdd4f54';
     }, 3000);
 }
