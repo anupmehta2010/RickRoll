@@ -1,4 +1,5 @@
 // Main controller script for the prank website
+
 // Global state object to track prank progress
 const prankState = {
     currentStep: 'intro',
@@ -15,19 +16,22 @@ const prankState = {
     })()
 };
 
-
-// Add to main.js
-// Preloader function
+// Preloader function to hide preloader and start intro sequence
 function hidePreloader() {
-    preloader.style.display = 'none';
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.style.display = 'none';
+    }
     startIntroSequence();
+    onPreloaderComplete();
 }
 
+// Preloader initialization: loads all media files and updates the loader UI
 function initPreloader() {
     const preloader = document.getElementById('preloader');
     const loaderBar = document.querySelector('.loader-bar-inner');
     const loaderPercentage = document.querySelector('.loader-percentage');
-    
+
     // List of all media files to preload
     const mediaFiles = [
         // Audio files
@@ -82,36 +86,37 @@ function initPreloader() {
         'images/splat.jpg',
         'images/static.jpg',
     ];
-    
+
     let loadedCount = 0;
     const totalFiles = mediaFiles.length;
-    
-    // Function to update loader
+
+    // Function to update loader UI
     function updateLoader() {
         const percentage = Math.round((loadedCount / totalFiles) * 100);
-        loaderBar.style.width = `${percentage}%`;
-        
-        // Update percentage text
+        if (loaderBar) loaderBar.style.width = `${percentage}%`;
+
         if (loaderPercentage) {
             loaderPercentage.textContent = `${percentage}%`;
         }
-        
+
         if (loadedCount === totalFiles) {
             // All files loaded, hide preloader and start experience
-            preloader.style.opacity = '0';
-            preloader.style.transition = 'opacity 0.5s ease';
-            preloader.addEventListener('transitionend', hidePreloader, { once: true });
-            
-            // Fallback in case transition event doesn't fire
-            setTimeout(hidePreloader, 500);
+            if (preloader) {
+                preloader.style.opacity = '0';
+                preloader.style.transition = 'opacity 0.5s ease';
+                preloader.addEventListener('transitionend', hidePreloader, { once: true });
+                // Fallback in case transition event doesn't fire
+                setTimeout(hidePreloader, 500);
+            } else {
+                hidePreloader();
+            }
         }
     }
-    
-    
+
     // Preload each file
     mediaFiles.forEach(file => {
-        const fileType = file.split('.').pop();
-        
+        const fileType = file.split('.').pop().toLowerCase();
+
         if (['mp3', 'wav'].includes(fileType)) {
             const audio = new Audio();
             audio.oncanplaythrough = function() {
@@ -150,23 +155,26 @@ function initPreloader() {
                 updateLoader();
             };
             img.src = file;
+        } else {
+            // Unknown file type, count as loaded to avoid blocking
+            loadedCount++;
+            updateLoader();
         }
     });
 }
 
-
+// Play audio with optional speech text fallback
 function playAudio(audioSrc, speechText) {
     console.log(`Playing sound: ${audioSrc}`);
     const audio = new Audio(audioSrc);
-    
-    // Add error handling
+
     audio.onerror = function() {
         console.error(`Failed to load audio: ${audioSrc}`);
         if (speechText) {
             showTextOverlay(speechText);
         }
     };
-    
+
     audio.play().catch(e => {
         console.log('Audio playback error:', e);
         if (speechText) {
@@ -181,6 +189,7 @@ function playAudio(audioSrc, speechText) {
     }
 }
 
+// Overlay text on screen for a short duration
 function showTextOverlay(text) {
     const textOverlay = document.createElement('div');
     textOverlay.className = 'text-overlay';
@@ -196,7 +205,7 @@ function verifyMediaFiles() {
     console.log("Verifying media files...");
     const mediaFilesList = document.querySelectorAll('audio, video, img');
     let allFilesValid = true;
-    
+
     mediaFilesList.forEach(element => {
         const src = element.src || element.currentSrc;
         if (!src) {
@@ -206,13 +215,13 @@ function verifyMediaFiles() {
             console.log(`Verified: ${src}`);
         }
     });
-    
+
     if (allFilesValid) {
         console.log("All media files verified successfully");
     } else {
         console.warn("Some media files could not be verified");
     }
-    
+
     return allFilesValid;
 }
 
@@ -233,7 +242,7 @@ function announce(message) {
 function playVoiceover(soundFile, text) {
     console.log(`Playing voiceover: ${text}`);
     // In reality, you'd play the audio file
-    
+
     // Create a text overlay for development
     const textOverlay = document.createElement('div');
     textOverlay.className = 'voiceover-overlay';
@@ -246,9 +255,9 @@ function playVoiceover(soundFile, text) {
     textOverlay.style.padding = '10px';
     textOverlay.style.borderRadius = '5px';
     textOverlay.style.zIndex = '1000';
-    
+
     document.body.appendChild(textOverlay);
-    
+
     setTimeout(() => {
         textOverlay.remove();
     }, 5000);
@@ -258,8 +267,6 @@ function playVoiceover(soundFile, text) {
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
-
-
 
 // Improved: Keyboard accessibility for buttons
 function enableKeyboardNav() {
@@ -271,60 +278,217 @@ function enableKeyboardNav() {
     });
 }
 
-// Modify the DOMContentLoaded event handler
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Document loaded, initializing hack...");
+// Function to skip to Spotify (prank end)
+function skipToSpotify() {
+    // Clear any intervals
+    if (prankState.glitchInterval) {
+        clearInterval(prankState.glitchInterval);
+    }
     
-    // Set up event listeners
-    const safeAddListener = (id, event, handler) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener(event, handler);
-        } else {
-            console.warn(`Element with id "${id}" not found. Event listener for "${event}" was not added.`);
+    if (prankState.glitchIntervals) {
+        prankState.glitchIntervals.forEach(interval => clearInterval(interval));
+    }
+    
+    // Show skip message
+    const skipMessage = document.createElement('div');
+    skipMessage.className = 'skip-message fullscreen';
+    skipMessage.innerHTML = `
+        <div class="skip-content">
+            <h2>Alright! Listen to some songs, you piece of ***</h2>
+            <p>Redirecting to Spotify...</p>
+        </div>
+    `;
+    document.body.appendChild(skipMessage);
+    
+    // Play beep sound
+    playAudio('audio/beep-sound.mp3');
+    
+    // Redirect after a delay
+    setTimeout(() => {
+        // In reality, replace with your Spotify playlist URL
+        window.location.href = 'https://open.spotify.com/playlist/37i9dQZF1EJsW2JIt2vVd7?si=57fd43c76bdd4f54';
+    }, 3000);
+}
+
+// Function to start the intro sequence
+function startIntroSequence() {
+    console.log("Starting intro sequence...");
+    announce("Experience started");
+    // Add your intro logic here
+    // For example, show the first prank screen or play an intro sound
+    playVoiceover('audio/intro-voiceover.mp3', "Welcome to the ultimate prank experience!");
+    prankState.introCompleted = true;
+}
+
+// Function to trigger more glitches with vibration
+function triggerMoreGlitchesWithVibration() {
+    triggerMoreGlitches();
+    vibrateDevice([200, 100, 200, 100, 200]);
+}
+
+// Function to trigger more glitches (visual effect)
+function triggerMoreGlitches() {
+    console.log("Triggering more glitches");
+    
+    // Create main glitch overlay
+    const glitchOverlay = document.createElement('div');
+    glitchOverlay.className = 'glitch-overlay';
+    glitchOverlay.style.position = 'fixed';
+    glitchOverlay.style.top = 0;
+    glitchOverlay.style.left = 0;
+    glitchOverlay.style.width = '100vw';
+    glitchOverlay.style.height = '100vh';
+    glitchOverlay.style.pointerEvents = 'none';
+    glitchOverlay.style.zIndex = 9999;
+    glitchOverlay.style.overflow = 'hidden';
+    document.body.appendChild(glitchOverlay);
+    
+    // Create multiple glitch elements with different effects
+    const glitchEffects = [];
+    
+    // Color shift effect
+    const colorShift = document.createElement('div');
+    colorShift.style.position = 'absolute';
+    colorShift.style.top = 0;
+    colorShift.style.left = 0;
+    colorShift.style.width = '100%';
+    colorShift.style.height = '100%';
+    colorShift.style.mixBlendMode = 'difference';
+    colorShift.style.background = 'rgba(255,0,100,0.2)';
+    glitchOverlay.appendChild(colorShift);
+    glitchEffects.push(colorShift);
+    
+    // Horizontal lines
+    const hLines = document.createElement('div');
+    hLines.style.position = 'absolute';
+    hLines.style.top = 0;
+    hLines.style.left = 0;
+    hLines.style.width = '100%';
+    hLines.style.height = '100%';
+    hLines.style.backgroundImage = 'linear-gradient(transparent 50%, rgba(0,0,0,0.5) 50%)';
+    hLines.style.backgroundSize = '100% 4px';
+    hLines.style.opacity = '0.5';
+    glitchOverlay.appendChild(hLines);
+    glitchEffects.push(hLines);
+    
+    // Create randomized glitch animations
+    const glitchIntervals = [];
+    
+    // Random shifts
+    glitchIntervals.push(setInterval(() => {
+        const rand = Math.random();
+        colorShift.style.transform = `translate(${(rand * 10) - 5}px, ${(rand * 10) - 5}px)`;
+        colorShift.style.opacity = (0.1 + Math.random() * 0.4).toString();
+    }, 100));
+    
+    // Play glitch sound
+    playAudio('audio/glitch-beep.mp3');
+    
+    // Store intervals for cleanup
+    prankState.glitchIntervals = prankState.glitchIntervals || [];
+    prankState.glitchIntervals.push(...glitchIntervals);
+    
+    // Remove overlay and clear intervals after delay
+    setTimeout(() => {
+        glitchIntervals.forEach(interval => clearInterval(interval));
+        glitchOverlay.remove();
+    }, 2000);
+}
+
+// Function to vibrate device if supported
+function vibrateDevice(pattern) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// Function to start a countdown (example)
+function startCountdown(seconds = 10, onComplete = null) {
+    console.log("Starting countdown");
+    announce("Countdown started");
+    
+    // Create countdown display
+    const countdownOverlay = document.createElement('div');
+    countdownOverlay.className = 'countdown-overlay';
+    countdownOverlay.style.position = 'fixed';
+    countdownOverlay.style.top = '0';
+    countdownOverlay.style.left = '0';
+    countdownOverlay.style.width = '100vw';
+    countdownOverlay.style.height = '100vh';
+    countdownOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    countdownOverlay.style.display = 'flex';
+    countdownOverlay.style.justifyContent = 'center';
+    countdownOverlay.style.alignItems = 'center';
+    countdownOverlay.style.zIndex = '9999';
+    
+    const countdownDisplay = document.createElement('div');
+    countdownDisplay.className = 'countdown-display';
+    countdownDisplay.style.fontSize = '10rem';
+    countdownDisplay.style.color = '#fff';
+    countdownDisplay.textContent = seconds.toString();
+    
+    countdownOverlay.appendChild(countdownDisplay);
+    document.body.appendChild(countdownOverlay);
+    
+    // Play countdown start sound
+    playAudio('audio/countdown-beepsound.mp3');
+    
+    // Start countdown timer
+    let secondsLeft = seconds;
+    const countdownInterval = setInterval(() => {
+        secondsLeft--;
+        countdownDisplay.textContent = secondsLeft.toString();
+        
+        // Play beep sound on each second
+        if (secondsLeft > 0) {
+            playAudio('audio/beep-sound.mp3');
+        }
+        
+        // Handle countdown completion
+        if (secondsLeft <= 0) {
+            clearInterval(countdownInterval);
+            countdownOverlay.remove();
+            
+            // Trigger glitch effect
+            triggerMoreGlitchesWithVibration();
+            
+            // Call the completion callback if provided
+            if (typeof onComplete === 'function') {
+                onComplete();
+            }
+        }
+    }, 1000);
+    
+    // Store interval for potential cleanup
+    prankState.countdownInterval = countdownInterval;
+    
+    return {
+        stop: function() {
+            clearInterval(countdownInterval);
+            countdownOverlay.remove();
+            console.log("Countdown stopped");
         }
     };
-    
-    safeAddListener('do-not-click', 'click', function() {
-        prankState.skipPrank = true;
-        skipToSpotify();
-    });
-    
-    safeAddListener('stabilize-btn', 'click', function() {
-        triggerMoreGlitchesWithVibration();
-        playAudio('audio/nice-try.mp3', 'Nice try! You just made it worse!');
-    });
-    
-    safeAddListener('escape-btn', 'click', function() {
-        triggerMoreGlitchesWithVibration();
-        playAudio('audio/no-escape.mp3', 'There is no escape from the fun!');
-    });
-    
-    safeAddListener('fake-skip', 'click', function() {
-        playAudio('audio/no-skipping.mp3', 'No skipping allowed! Face your fears... and your laughs!');
-    });
-    
-    // Start preloader instead of directly starting intro sequence
-initPreloader();
-});
+}
 
-// Function to add touch events for mobile
+// Function to set up touch events for mobile
 function setupTouchEvents() {
     // Convert swipe gestures to appropriate actions
     let touchStartX = 0;
     let touchStartY = 0;
-    
+
     document.addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, false);
-    
+
     document.addEventListener('touchend', function(e) {
         const touchEndX = e.changedTouches[0].screenX;
         const touchEndY = e.changedTouches[0].screenY;
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
         const angle = Math.atan2(diffY, diffX) * (180 / Math.PI);
+
         function isHorizontalSwipe(angle) {
             return Math.abs(angle) < 30 || Math.abs(angle) > 150;
         }
@@ -338,99 +502,56 @@ function setupTouchEvents() {
 
         if ((horizontalSwipe && Math.abs(diffX) > 50) || (verticalSwipe && Math.abs(diffY) > 50)) {
             triggerMoreGlitchesWithVibration();
-            playAudio('RickRoll/audio/swipe-detected.mp3', 'Swipe detected! More glitches activated!');
+            playAudio('audio/swipe-detected.mp3', 'Swipe detected! More glitches activated!');
         }
     }, false);
-    
-    // Add vibration for certain events if supported
-        const canVibrate = 'vibrate' in navigator;
-        const vibrateDevice = (pattern) => {
-            if (canVibrate) {
-                navigator.vibrate(pattern);
-            }
-        };
-    
-        // Define missing functions
-        function triggerMoreGlitches() {
-            console.log("Triggering more glitches");
-            // Add actual glitch effect implementation here
-            const glitchOverlay = document.createElement('div');
-            glitchOverlay.className = 'glitch-overlay';
-            document.body.appendChild(glitchOverlay);
-            setTimeout(() => {
-                glitchOverlay.remove();
-            }, 2000);
-        }
-        
-        function startCountdown() {
-            console.log("Starting countdown");
-            // Add actual countdown implementation here
-            announce("Countdown started");
-        }
-        
-        // Wrap triggerMoreGlitches to add vibration
-        const triggerMoreGlitchesWithVibration = () => {
-            triggerMoreGlitches();
-            if (typeof startCountdown === 'function') {
-                // Save the original startCountdown function
-                const originalStartCountdown = startCountdown;
-
-                // Wrap startCountdown to include vibration functionality
-                const wrappedStartCountdown = function() {
-                    originalStartCountdown();
-                    vibrateDevice([200, 100, 200, 100, 200]);
-                };
-
-                // Replace all calls to startCountdown with wrappedStartCountdown
-                // Ensure that wrappedStartCountdown is used wherever startCountdown is invoked
-                // Example: Dispatch the 'startCountdownEvent' to trigger wrappedStartCountdown
-                document.addEventListener('startCountdownEvent', wrappedStartCountdown);
-
-        // Example usage: Dispatch the event after preloader completes
-        setTimeout(() => {
-            document.dispatchEvent(new Event('startCountdownEvent'));
-        }, 1000);
-        
-// Add missing functions
-function verifyMediaFiles() {
-    console.log("Verifying media files...");
-    // Implementation for media verification
-}
-
-function skipToSpotify() {
-    console.log("Skipping to Spotify...");
-    // Implementation for skipping to Spotify
-}
-
-function startIntroSequence() {
-    console.log("Starting intro sequence...");
-    // Implementation for intro sequence
-    announce("Experience started");
 }
 
 // Call this function after preloader completes
 function onPreloaderComplete() {
     setupTouchEvents();
-    console.log("Preloader complete, touch events set up");
+    enableKeyboardNav();
+    console.log("Preloader complete, touch events and keyboard nav set up");
 }
 
-// Update initPreloader function to call onPreloaderComplete when done
-// This should be called in the preloader completion callback1000);
-            } else {
-                console.warn('startCountdown is not defined. Skipping wrapping.');
-            }
-        };
-    
-        // Use wrappedStartCountdown wherever startCountdown is called
-        const wrappedStartCountdown = function() {
-            if (typeof startCountdown === 'function') {
-                startCountdown();
-                vibrateDevice([200, 100, 200, 100, 200]);
-            }
-        };
-        document.addEventListener('startCountdownEvent', wrappedStartCountdown);
+// DOMContentLoaded event handler to initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Document loaded, initializing prank...");
+
+    // Set up event listeners for prank buttons
+    function safeAddListener(id, event, handler) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener(event, handler);
+        } else {
+            console.warn(`Element with id "${id}" not found. Event listener for "${event}" was not added.`);
+        }
     }
 
-// Call this function after preloader completes
-// Add to the end of initPreloader function:
-setupTouchEvents();
+    safeAddListener('do-not-click', 'click', function() {
+        prankState.skipPrank = true;
+        skipToSpotify();
+    });
+
+    safeAddListener('stabilize-btn', 'click', function() {
+        playAudio('audio/nice-try.mp3', 'Nice try! You just made it worse!');
+        triggerMoreGlitchesWithVibration();
+    });
+
+    safeAddListener('escape-btn', 'click', function() {
+        playAudio('audio/no-escape.mp3', 'There is no escape from the fun!');
+        triggerMoreGlitchesWithVibration();
+    });
+
+    safeAddListener('fake-skip', 'click', function() {
+        playAudio('audio/no-skipping.mp3', 'No skipping allowed! Face your fears... and your laughs!');
+        triggerMoreGlitchesWithVibration();
+    });
+
+    // Start preloader instead of directly starting intro sequence
+    initPreloader();
+});
+
+// Expose for debugging
+window.prankState = prankState;
+window.verifyMediaFiles = verifyMediaFiles;
