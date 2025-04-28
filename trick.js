@@ -292,16 +292,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     safeAddListener('stabilize-btn', 'click', function() {
         triggerMoreGlitchesWithVibration();
-        playAudio('RickRoll/audio/nice-try.mp3', 'Nice try! You just made it worse!');
+        playAudio('audio/nice-try.mp3', 'Nice try! You just made it worse!');
     });
     
     safeAddListener('escape-btn', 'click', function() {
         triggerMoreGlitchesWithVibration();
-        playAudio('RickRoll/audio/no-escape.mp3', 'There is no escape from the fun!');
+        playAudio('audio/no-escape.mp3', 'There is no escape from the fun!');
     });
     
     safeAddListener('fake-skip', 'click', function() {
-        playAudio('RickRoll/audio/no-skipping.mp3', 'No skipping allowed! Face your fears... and your laughs!');
+        playAudio('audio/no-skipping.mp3', 'No skipping allowed! Face your fears... and your laughs!');
     });
     
     // Start preloader instead of directly starting intro sequence
