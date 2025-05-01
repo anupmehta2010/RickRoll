@@ -16,6 +16,52 @@ const prankState = {
     })()
 };
 
+// Audio volume controls
+const GLOBAL_AUDIO_VOLUME = 0.2;
+const AUDIO_VOLUME_MAP = {
+    'audio/evil-laugh.mp3': 0.1,
+    'audio/john-cena.mp3': 0.08
+};
+
+// Play audio with optional speech text fallback and volume control
+function playAudio(audioSrc, speechText) {
+    console.log(`Playing sound: ${audioSrc}`);
+    const audio = new Audio(audioSrc);
+    let volume = AUDIO_VOLUME_MAP[audioSrc] !== undefined ? AUDIO_VOLUME_MAP[audioSrc] : GLOBAL_AUDIO_VOLUME;
+    audio.volume = volume;
+
+    audio.onerror = function() {
+        console.error(`Failed to load audio: ${audioSrc}`);
+        if (speechText) {
+            showTextOverlay(speechText);
+        }
+    };
+
+    audio.play().catch(e => {
+        console.log('Audio playback error:', e);
+        if (speechText) {
+            showTextOverlay(speechText);
+        }
+    });
+
+    // If speech text is provided and speech synthesis is available
+    if (speechText && window.speechSynthesis) {
+        const speech = new SpeechSynthesisUtterance(speechText);
+        window.speechSynthesis.speak(speech);
+    }
+}
+
+// Overlay text on screen for a short duration
+function showTextOverlay(text) {
+    const textOverlay = document.createElement('div');
+    textOverlay.className = 'text-overlay';
+    textOverlay.textContent = text;
+    document.body.appendChild(textOverlay);
+    setTimeout(() => {
+        textOverlay.remove();
+    }, 2000);
+}
+
 // Preloader function to hide preloader and start intro sequence
 function hidePreloader() {
     const preloader = document.getElementById('preloader');
@@ -32,7 +78,7 @@ function initPreloader() {
     const loaderBar = document.querySelector('.loader-bar-inner');
     const loaderPercentage = document.querySelector('.loader-percentage');
 
-    // List of all media files to preload
+    // List of all media files to preload (non-repeating)
     const mediaFiles = [
         // Audio files
         'audio/aaaaahhhh.mp3',
@@ -87,6 +133,8 @@ function initPreloader() {
         'images/static.jpg',
     ];
 
+    const nextMediaFile = createNonRepeatingRandomizer(mediaFiles);
+
     let loadedCount = 0;
     const totalFiles = mediaFiles.length;
 
@@ -113,8 +161,9 @@ function initPreloader() {
         }
     }
 
-    // Preload each file
-    mediaFiles.forEach(file => {
+    // Preload each file (non-repeating)
+    for (let i = 0; i < totalFiles; i++) {
+        const file = nextMediaFile();
         const fileType = file.split('.').pop().toLowerCase();
 
         if (['mp3', 'wav'].includes(fileType)) {
@@ -160,44 +209,7 @@ function initPreloader() {
             loadedCount++;
             updateLoader();
         }
-    });
-}
-
-// Play audio with optional speech text fallback
-function playAudio(audioSrc, speechText) {
-    console.log(`Playing sound: ${audioSrc}`);
-    const audio = new Audio(audioSrc);
-
-    audio.onerror = function() {
-        console.error(`Failed to load audio: ${audioSrc}`);
-        if (speechText) {
-            showTextOverlay(speechText);
-        }
-    };
-
-    audio.play().catch(e => {
-        console.log('Audio playback error:', e);
-        if (speechText) {
-            showTextOverlay(speechText);
-        }
-    });
-
-    // If speech text is provided and speech synthesis is available
-    if (speechText && window.speechSynthesis) {
-        const speech = new SpeechSynthesisUtterance(speechText);
-        window.speechSynthesis.speak(speech);
     }
-}
-
-// Overlay text on screen for a short duration
-function showTextOverlay(text) {
-    const textOverlay = document.createElement('div');
-    textOverlay.className = 'text-overlay';
-    textOverlay.textContent = text;
-    document.body.appendChild(textOverlay);
-    setTimeout(() => {
-        textOverlay.remove();
-    }, 2000);
 }
 
 // Function to verify all media files exist and can be loaded
@@ -241,26 +253,8 @@ function announce(message) {
 // Function for playing voiceovers with text fallback
 function playVoiceover(soundFile, text) {
     console.log(`Playing voiceover: ${text}`);
-    // In reality, you'd play the audio file
-
-    // Create a text overlay for development
-    const textOverlay = document.createElement('div');
-    textOverlay.className = 'voiceover-overlay';
-    textOverlay.textContent = text;
-    textOverlay.style.position = 'absolute';
-    textOverlay.style.bottom = '20px';
-    textOverlay.style.left = '20px';
-    textOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    textOverlay.style.color = '#fff';
-    textOverlay.style.padding = '10px';
-    textOverlay.style.borderRadius = '5px';
-    textOverlay.style.zIndex = '1000';
-
-    document.body.appendChild(textOverlay);
-
-    setTimeout(() => {
-        textOverlay.remove();
-    }, 5000);
+    playAudio(soundFile);
+    showTextOverlay(text);
 }
 
 // Helper function to get random item from array
@@ -280,16 +274,12 @@ function enableKeyboardNav() {
 
 // Function to skip to Spotify (prank end)
 function skipToSpotify() {
-    // Clear any intervals
     if (prankState.glitchInterval) {
         clearInterval(prankState.glitchInterval);
     }
-    
     if (prankState.glitchIntervals) {
         prankState.glitchIntervals.forEach(interval => clearInterval(interval));
     }
-    
-    // Show skip message
     const skipMessage = document.createElement('div');
     skipMessage.className = 'skip-message fullscreen';
     skipMessage.innerHTML = `
@@ -299,13 +289,8 @@ function skipToSpotify() {
         </div>
     `;
     document.body.appendChild(skipMessage);
-    
-    // Play beep sound
     playAudio('audio/beep-sound.mp3');
-    
-    // Redirect after a delay
     setTimeout(() => {
-        // In reality, replace with your Spotify playlist URL
         window.location.href = 'https://open.spotify.com/playlist/37i9dQZF1EJsW2JIt2vVd7?si=57fd43c76bdd4f54';
     }, 3000);
 }
@@ -314,8 +299,6 @@ function skipToSpotify() {
 function startIntroSequence() {
     console.log("Starting intro sequence...");
     announce("Experience started");
-    // Add your intro logic here
-    // For example, show the first prank screen or play an intro sound
     playVoiceover('audio/intro-voiceover.mp3', "Welcome to the ultimate prank experience!");
     prankState.introCompleted = true;
 }
@@ -329,7 +312,7 @@ function triggerMoreGlitchesWithVibration() {
 // Function to trigger more glitches (visual effect)
 function triggerMoreGlitches() {
     console.log("Triggering more glitches");
-    
+
     // Create main glitch overlay
     const glitchOverlay = document.createElement('div');
     glitchOverlay.className = 'glitch-overlay';
@@ -342,10 +325,10 @@ function triggerMoreGlitches() {
     glitchOverlay.style.zIndex = 9999;
     glitchOverlay.style.overflow = 'hidden';
     document.body.appendChild(glitchOverlay);
-    
+
     // Create multiple glitch elements with different effects
     const glitchEffects = [];
-    
+
     // Color shift effect
     const colorShift = document.createElement('div');
     colorShift.style.position = 'absolute';
@@ -357,7 +340,7 @@ function triggerMoreGlitches() {
     colorShift.style.background = 'rgba(255,0,100,0.2)';
     glitchOverlay.appendChild(colorShift);
     glitchEffects.push(colorShift);
-    
+
     // Horizontal lines
     const hLines = document.createElement('div');
     hLines.style.position = 'absolute';
@@ -370,24 +353,24 @@ function triggerMoreGlitches() {
     hLines.style.opacity = '0.5';
     glitchOverlay.appendChild(hLines);
     glitchEffects.push(hLines);
-    
+
     // Create randomized glitch animations
     const glitchIntervals = [];
-    
+
     // Random shifts
     glitchIntervals.push(setInterval(() => {
         const rand = Math.random();
         colorShift.style.transform = `translate(${(rand * 10) - 5}px, ${(rand * 10) - 5}px)`;
         colorShift.style.opacity = (0.1 + Math.random() * 0.4).toString();
     }, 100));
-    
+
     // Play glitch sound
     playAudio('audio/glitch-beep.mp3');
-    
+
     // Store intervals for cleanup
     prankState.glitchIntervals = prankState.glitchIntervals || [];
     prankState.glitchIntervals.push(...glitchIntervals);
-    
+
     // Remove overlay and clear intervals after delay
     setTimeout(() => {
         glitchIntervals.forEach(interval => clearInterval(interval));
@@ -406,7 +389,7 @@ function vibrateDevice(pattern) {
 function startCountdown(seconds = 10, onComplete = null) {
     console.log("Starting countdown");
     announce("Countdown started");
-    
+
     // Create countdown display
     const countdownOverlay = document.createElement('div');
     countdownOverlay.className = 'countdown-overlay';
@@ -420,48 +403,48 @@ function startCountdown(seconds = 10, onComplete = null) {
     countdownOverlay.style.justifyContent = 'center';
     countdownOverlay.style.alignItems = 'center';
     countdownOverlay.style.zIndex = '9999';
-    
+
     const countdownDisplay = document.createElement('div');
     countdownDisplay.className = 'countdown-display';
     countdownDisplay.style.fontSize = '10rem';
     countdownDisplay.style.color = '#fff';
     countdownDisplay.textContent = seconds.toString();
-    
+
     countdownOverlay.appendChild(countdownDisplay);
     document.body.appendChild(countdownOverlay);
-    
+
     // Play countdown start sound
     playAudio('audio/countdown-beepsound.mp3');
-    
+
     // Start countdown timer
     let secondsLeft = seconds;
     const countdownInterval = setInterval(() => {
         secondsLeft--;
         countdownDisplay.textContent = secondsLeft.toString();
-        
+
         // Play beep sound on each second
         if (secondsLeft > 0) {
             playAudio('audio/beep-sound.mp3');
         }
-        
+
         // Handle countdown completion
         if (secondsLeft <= 0) {
             clearInterval(countdownInterval);
             countdownOverlay.remove();
-            
+
             // Trigger glitch effect
             triggerMoreGlitchesWithVibration();
-            
+
             // Call the completion callback if provided
             if (typeof onComplete === 'function') {
                 onComplete();
             }
         }
     }, 1000);
-    
+
     // Store interval for potential cleanup
     prankState.countdownInterval = countdownInterval;
-    
+
     return {
         stop: function() {
             clearInterval(countdownInterval);

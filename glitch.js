@@ -1,33 +1,4 @@
 // glitch.js - Handles the glitch simulation phase
-// This file contains the logic for the glitch simulation phase of the prank
-// including video playback, sound effects, and visual glitches.
-
-
-// const prankState = {
-//     introCompleted: false,
-//     glitchSimulationCompleted: false,
-//     skipPrank: false,
-//     glitchInterval: null,
-//     glitchIntervals: []
-// };
-
-
-// Function to get a random item from an array
-function getRandomItem(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-// Function to play audio with optional text-to-speech
-// function playAudio(audioSrc, speechText) {
-//     const audio = new Audio(audioSrc);
-//     audio.play().catch(e => console.log('Audio playback error:', e));
-    
-//     // If speech text is provided and speech synthesis is available
-//     if (speechText && window.speechSynthesis) {
-//         const speech = new SpeechSynthesisUtterance(speechText);
-//         window.speechSynthesis.speak(speech);
-//     }
-// }
 
 // Video clips for the glitch simulation
 const videoClips = [
@@ -69,6 +40,17 @@ const taunts = [
     "Your phone background is so... you."
 ];
 
+const warningMessages = [
+    "WARNING: Facial recognition database accessed...",
+    "CAUTION: Your device's camera is now streaming...",
+    "WARNING: Personal data transfer 45% complete...",
+    "ALERT: Remote access obtained to this device!",
+    "CAUTION: Your location has been triangulated!",
+    "WARNING: Battery overcharge protocol initiated...",
+    "ALERT: Social media accounts are being linked...",
+    "CAUTION: Microphone recording in progress..."
+]
+
 // Sound effects for the glitch simulation
 const glitchSounds = [
     'audio/static.mp3',
@@ -81,134 +63,189 @@ const glitchSounds = [
     'audio/evil-laugh.mp3',
     'audio/silly-giggle.mp3',
     'audio/john-cena.mp3',
-    'audio/aaaaahhhh.mp3',
-
+    'audio/aaaaahhhh.mp3'
 ];
 
-// Function to transition to glitch simulation
+// Transition effect classes
+const transitions = [
+    'glitch-wipe', 'static-burst', 'comic-splat', 'horror-fade', 'jump-cut'
+];
+
+// Main transition function to glitch simulation
 function transitionToGlitchSimulation() {
     console.log("Transitioning into glitch simulation...");
-    
-    // Hide intro sequence
-    document.getElementById('intro-sequence').classList.remove('active');
-    
-    // Show glitch simulation
-    document.getElementById('glitch-simulation').classList.add('active');
-    
-    // Start the glitch simulation sequence
+
+    const introSeq = document.getElementById('intro-sequence');
+    const glitchSim = document.getElementById('glitch-simulation');
+    if (introSeq) introSeq.classList.remove('active');
+    if (glitchSim) glitchSim.classList.add('active');
+
     startGlitchSimulation();
 }
 
-// Function to start the glitch simulation
+// Main glitch simulation logic
 function startGlitchSimulation() {
     const videoContainer = document.getElementById('video-container');
-    const glitchOverlays = document.querySelectorAll('.glitch-overlay');
     const textMessages = document.getElementById('text-messages');
-    
-    // Clear any previous content
+    const glitchOverlays = document.querySelectorAll('.glitch-overlay');
+
+    if (!videoContainer || !textMessages) {
+        console.warn('Missing video or text message container!');
+        return;
+    }
+
+    // Clear previous content
     videoContainer.innerHTML = '';
     textMessages.innerHTML = '';
-    
+
     // Create video element
     const video = document.createElement('video');
     video.className = 'fullscreen';
     video.autoplay = true;
-    video.muted = true; 
+    video.muted = false; // Set to false for sound
+    video.playsInline = true; // For iOS compatibility
     video.loop = true;
+    video.style.objectFit = 'cover'; // Cover the entire screen
+    video.style.zIndex = '1'; // Ensure it's on top of other elements
+    video.style.pointerEvents = 'none'; // Allow clicks to pass through
     videoContainer.appendChild(video);
-    
-    // Function to play a random video clip
+
+    // Non-repeating randomizers
+    const nextVideo = createNonRepeatingRandomizer(videoClips);
+    const nextSound = createNonRepeatingRandomizer(glitchSounds);
+    const nextTransition = createNonRepeatingRandomizer(transitions);
+    const nextOverlay = createNonRepeatingRandomizer(Array.from(glitchOverlays));
+    const nextErrorMsg = createNonRepeatingRandomizer(errorMessages);
+    const nextTaunt = createNonRepeatingRandomizer(taunts);
+    const nextWarning = createNonRepeatingRandomizer(warningMessages);
+
+    let isVideoPlaying = false;
+
+    // Audio volume controls
+    const GLOBAL_AUDIO_VOLUME = 1.0; // Default volume
+    // Adjust volume for specific audio files
+    const AUDIO_VOLUME_MAP = {
+        'audio/static.mp3' : 0.1,
+        'audio/glitch-beep.mp3': 0.1,
+        'audio/glitch-brokenradio.mp3': 0.1,
+        'audio/digital-error.mp3': 0.1,
+        'audio/comic-boing.mp3': 0.1,
+        'audio/spooky-sound.mp3': 0.1,
+        'audio/falling-sound.mp3': 0.1,
+        'audio/evil-laugh.mp3': 0.1,
+        'audio/silly-giggle.mp3': 0.1,
+        'audio/john-cena.mp3': 0.1,
+        'audio/aaaaahhhh.mp3': 0.7
+    };
+
+    // Play audio with volume control
+    function playAudio(src) {
+        const audio = new Audio(src);
+        let volume = AUDIO_VOLUME_MAP[src] !== undefined ? AUDIO_VOLUME_MAP[src] : GLOBAL_AUDIO_VOLUME;
+        if (isVideoPlaying) {
+            volume = Math.min(volume, 0.08); // Lower volume if video is playing
+        }
+        audio.volume = volume;
+        audio.play().catch(e => console.log('Audio playback error:', e));
+    }
+
+    // Play a random video clip and sound, non-repeating
     function playRandomVideo() {
-        const randomClip = getRandomItem(videoClips);
+        const randomClip = nextVideo();
         video.src = randomClip;
         video.play().catch(e => console.log('Video playback error:', e));
-        
-        // Play a random sound effect
-        const randomSound = getRandomItem(glitchSounds);
-        playAudio(randomSound);
+        isVideoPlaying = true;
+        playAudio(nextSound());
     }
-    
-    // Start with a random video
+
     playRandomVideo();
-    
-    // Change video every 10-15 seconds with transition effects
+    // Change video every 10-15 seconds with non-repeating transitions
     let videoInterval = setInterval(() => {
-        // Create a transition effect
         const transition = document.createElement('div');
         transition.className = 'transition-effect fullscreen';
         document.body.appendChild(transition);
-        
-        // Random transition style
-        const transitions = ['glitch-wipe', 'static-burst', 'comic-splat', 'horror-fade', 'jump-cut'];
-        const randomTransition = getRandomItem(transitions);
-        transition.classList.add(randomTransition);
-        
-        // After transition effect, change video
+
+        transition.classList.add(nextTransition());
+
         setTimeout(() => {
             playRandomVideo();
             transition.remove();
         }, 500);
     }, 10000 + Math.floor(Math.random() * 5000));
-    
-    // Show random glitch overlays
+
+    // Show non-repeating glitch overlays
     let overlayInterval = setInterval(() => {
-        // Choose a random overlay
-        const randomOverlay = glitchOverlays[Math.floor(Math.random() * glitchOverlays.length)];
-        
-        // Show the overlay
+        if (glitchOverlays.length === 0) return;
+        const randomOverlay = nextOverlay();
         randomOverlay.style.opacity = '1';
-        
-        // If it's the error message overlay, add a random message
+
+        // If it's the error message overlay, add a non-repeating message
         if (randomOverlay.id === 'error-message-overlay') {
-            randomOverlay.textContent = getRandomItem(errorMessages);
+            randomOverlay.textContent = nextErrorMsg();
         }
-        
-        // Hide after a random time
+
         setTimeout(() => {
             randomOverlay.style.opacity = '0';
         }, 1000 + Math.floor(Math.random() * 2000));
     }, 3000 + Math.floor(Math.random() * 2000));
-    
-    // Display random text messages
+
+    // Display non-repeating text messages
+    let messageTypes = ['error-message', 'warning-message', 'taunt-message'];
+    const nextMsgType = createNonRepeatingRandomizer(messageTypes);
+
     let messageInterval = setInterval(() => {
-        // Create a new message
         const message = document.createElement('div');
-        
-        // Randomly choose message type
-        const messageTypes = ['error-message', 'warning-message', 'taunt-message'];
-        const randomType = getRandomItem(messageTypes);
+        const randomType = nextMsgType();
         message.className = randomType;
-        
-        // Set message content based on type
+
         if (randomType === 'taunt-message') {
-            message.textContent = getRandomItem(taunts);
-        } else {
-            message.textContent = getRandomItem(errorMessages);
+            message.textContent = nextTaunt();
         }
-        
-        // Add to container
+        else if (randomType === 'warning-message') {
+            message.textContent = nextWarning();
+        } 
+        else {
+            message.textContent = nextErrorMsg();
+        }
+
         textMessages.appendChild(message);
-        
-        // Remove after a few seconds
+
         setTimeout(() => {
             message.remove();
         }, 3000);
     }, 4000 + Math.floor(Math.random() * 3000));
-    
+
     // Store intervals for cleanup
-    prankState.glitchIntervals = [videoInterval, overlayInterval, messageInterval];
-    
+    if (typeof prankState !== 'undefined') {
+        prankState.glitchIntervals = [videoInterval, overlayInterval, messageInterval];
+    }
+
     // End glitch simulation after about 90 seconds
     setTimeout(() => {
-        // Clear intervals
         clearInterval(videoInterval);
         clearInterval(overlayInterval);
         clearInterval(messageInterval);
-        
+
+        // Hide overlays
+        glitchOverlays.forEach(overlay => overlay.style.opacity = '0');
+        textMessages.innerHTML = '';
+
         // Transition to troll phase
-        prankState.glitchSimulationCompleted = true;
-        if (!prankState.skipPrank) {
+        if (typeof prankState !== 'undefined') prankState.glitchSimulationCompleted = true;
+        if (typeof prankState === 'undefined' || !prankState.skipPrank) {
             transitionToTrollPhase();
         }
     }, 90000);
 }
+
+// Dummy implementations for playAudio and transitionToTrollPhase if not defined
+if (typeof playAudio !== 'function') {
+    function playAudio(src) { console.log(`(Simulated) Playing audio: ${src}`); }
+}
+if (typeof transitionToTrollPhase !== 'function') {
+    function transitionToTrollPhase() { console.log('(Simulated) Transition to troll phase'); }
+}
+
+// Expose for debugging
+window.transitionToGlitchSimulation = transitionToGlitchSimulation;
+window.startGlitchSimulation = startGlitchSimulation;
